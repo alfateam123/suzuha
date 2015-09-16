@@ -64,7 +64,7 @@ int gettimeofday(struct timeval *tp, struct timezone *tzp) {
   // Adjust by least-significant 32bits in addition
   // to the padding defined by DELTA_BEFORE_BOUNDARY
   //uint64_t mask = (((uint64_t) 1) << 32) - 1;
-  uint64_t adjust = DELTA_BEFORE_BOUNDARY * USECS_IN_MSEC;
+  uint64_t adjust = DELTA_BEFORE_BOUNDARY * USECS_IN_SEC;
       //(msec_since_epoch_base & mask) * USECS_IN_MSEC + DELTA_BEFORE_BOUNDARY;
 
   // Compute adjusted time and populate timeval struct
@@ -105,7 +105,7 @@ int settimeofday(const struct timeval *tp, const struct timezone *ztp){
   // int tz_dsttime;         /* type of DST correction */  
   if(ztp != NULL){
     if(ztp->tz_dsttime == 0){
-      DELTA_BEFORE_BOUNDARY = ztp->tz_minuteswest * USECS_IN_SEC;
+      DELTA_BEFORE_BOUNDARY = ztp->tz_minuteswest;
     }
   }
 #ifdef GTOD_SHIM_DEBUG
