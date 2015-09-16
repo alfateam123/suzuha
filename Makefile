@@ -1,16 +1,25 @@
 
 CXX := g++
 
-all: gtod.so
+all: gtod.so test.c
 
 gtod.o: gtod.cpp
-	$(CXX) -fPIC $^ -c -o $@ -Wall -Werror
+	$(CXX) -DGTOD_SHIM_DEBUG  -fPIC $^ -c -o $@ -Wall -Werror
+
+#gtod.o: gtod.cpp
+#	$(CXX) -fPIC $^ -c -o $@ -Wall -Werror
 
 gtod.so: gtod.o libstdc++.a
-	$(CXX) -shared $^ -o $@ 
+	$(CXX) -shared $^ -o $@ -ldl 
 
 libstdc++.a:
 	ln -s $(shell $(CXX) -print-file-name=libstdc++.a)
 
+test.c:
+	$(CXX) $@ -Wall -Werror
+
 clean:
-	-rm gtod.o gtod.so libstdc++.a
+	-rm gtod.o gtod.so libstdc++.a test
+
+#run:
+#	./test && LD_PRELOAD=$PWD/gtod.so ./test
