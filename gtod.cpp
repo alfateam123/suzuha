@@ -54,8 +54,8 @@ int gettimeofday(struct timeval *tp, struct timezone *tzp) {
 
   uint64_t now = get_usec_since_epoch();
 
-  // Store time at first invocation of gtod
-  uint64_t usec_since_epoch_base = now;
+  //// Store time at first invocation of gtod
+  //uint64_t usec_since_epoch_base = now;
   
 
   // Desired time is nearest 32bit boundary of msec
@@ -73,6 +73,9 @@ int gettimeofday(struct timeval *tp, struct timezone *tzp) {
   // For debugging, log the time and delta to the 32bit msec boundary
 #ifdef GTOD_SHIM_DEBUG
   if (true) {
+    // Store time at first invocation of gtod
+    uint64_t usec_since_epoch_base = now;
+
     int64_t usec_before_boundary =
         (int64_t)(now - usec_since_epoch_base) - DELTA_BEFORE_BOUNDARY;
     printf(
