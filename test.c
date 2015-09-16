@@ -13,7 +13,7 @@ int main(){
   now.tv_sec += 1000;
   struct timezone set_shift;
   set_shift.tz_dsttime = 0;
-  set_shift.tz_minuteswest = 0; //10000000;
+  set_shift.tz_minuteswest = 10; //10000000;
   int ret = settimeofday(&now, &set_shift);
   if(ret == -1) printf("%s\n", strerror(errno)); 
 

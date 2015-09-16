@@ -21,7 +21,7 @@
 const int64_t USECS_IN_SEC = 1000000;
 const int64_t USECS_IN_MSEC = 1000;
 
-/*const*/ int64_t DELTA_BEFORE_BOUNDARY = 10 * USECS_IN_SEC; // 10s
+/*const*/ int64_t DELTA_BEFORE_BOUNDARY = 0; //10 * USECS_IN_SEC; // 10s
 
 typedef int (*GTOD_t)(struct timeval *, struct timezone *);
 typedef int (*STOD_t)(const struct timeval*, const struct timezone *);
@@ -46,21 +46,26 @@ uint64_t get_usec_since_epoch() {
 }
 
 int gettimeofday(struct timeval *tp, struct timezone *tzp) {
-  assert(!tzp && "non-null timezone pointer?");
+  assert(!tzp && "non-null timezone pointer? you're using gtod-shim, so a timezone would be ignored.");
+
+#ifdef GTOD_SHIM_DEBUG
+   printf("[GTOD_HOOK] DELTA_BEFORE_BOUNDARY=%ld\n", DELTA_BEFORE_BOUNDARY);
+#endif
+
 
   uint64_t now = get_usec_since_epoch();
 
   // Store time at first invocation of gtod
-  static uint64_t usec_since_epoch_base = now;
+  uint64_t usec_since_epoch_base = now;
   // Same, in msec, for convenience
-  uint64_t msec_since_epoch_base = usec_since_epoch_base / USECS_IN_MSEC;
+  //uint64_t msec_since_epoch_base = usec_since_epoch_base / USECS_IN_MSEC;
 
   // Desired time is nearest 32bit boundary of msec
   // Adjust by least-significant 32bits in addition
   // to the padding defined by DELTA_BEFORE_BOUNDARY
-  uint64_t mask = (((uint64_t) 1) << 32) - 1;
-  uint64_t adjust =
-      (msec_since_epoch_base & mask) * USECS_IN_MSEC + DELTA_BEFORE_BOUNDARY;
+  //uint64_t mask = (((uint64_t) 1) << 32) - 1;
+  uint64_t adjust = DELTA_BEFORE_BOUNDARY * USECS_IN_MSEC;
+      //(msec_since_epoch_base & mask) * USECS_IN_MSEC + DELTA_BEFORE_BOUNDARY;
 
   // Compute adjusted time and populate timeval struct
   uint64_t now_adjust = now - adjust;
@@ -104,7 +109,7 @@ int settimeofday(const struct timeval *tp, const struct timezone *ztp){
     }
   }
 #ifdef GTOD_SHIM_DEBUG
-   printf("[STOD_HOOK] DELTA_BEFORE_BOUNDARY=%ld", DELTA_BEFORE_BOUNDARY);
+   printf("[STOD_HOOK] DELTA_BEFORE_BOUNDARY=%ld\n", DELTA_BEFORE_BOUNDARY);
 #endif
 
   return use_real_settimeofday(tp, ztp);
