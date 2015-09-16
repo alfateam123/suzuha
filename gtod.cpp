@@ -52,13 +52,11 @@ int gettimeofday(struct timeval *tp, struct timezone *tzp) {
    printf("[GTOD_HOOK] DELTA_BEFORE_BOUNDARY=%ld\n", DELTA_BEFORE_BOUNDARY);
 #endif
 
-
   uint64_t now = get_usec_since_epoch();
 
   // Store time at first invocation of gtod
   uint64_t usec_since_epoch_base = now;
-  // Same, in msec, for convenience
-  //uint64_t msec_since_epoch_base = usec_since_epoch_base / USECS_IN_MSEC;
+  
 
   // Desired time is nearest 32bit boundary of msec
   // Adjust by least-significant 32bits in addition
@@ -101,17 +99,16 @@ int settimeofday(const struct timeval *tp, const struct timezone *ztp){
 #ifdef GTOD_SHIM_DEBUG
    printf("[STOD_HOOK] called custom settimeofday!\n");
 #endif
-  // int tz_minuteswest;     /* minutes west of Greenwich */
-  // int tz_dsttime;         /* type of DST correction */  
+
   if(ztp != NULL){
     if(ztp->tz_dsttime == 0){
       DELTA_BEFORE_BOUNDARY = ztp->tz_minuteswest;
     }
   }
+
 #ifdef GTOD_SHIM_DEBUG
    printf("[STOD_HOOK] DELTA_BEFORE_BOUNDARY=%ld\n", DELTA_BEFORE_BOUNDARY);
 #endif
 
   return use_real_settimeofday(tp, ztp);
 }
-
