@@ -22,4 +22,4 @@ clean:
 	-rm gtod.o gtod.so libstdc++.a test
 
 run_tests:
-	cd tests && nosetests
+	bash run_tests.sh
