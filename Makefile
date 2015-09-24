@@ -21,5 +21,5 @@ test.c:
 clean:
 	-rm gtod.o gtod.so libstdc++.a test
 
-#run:
-#	./test && LD_PRELOAD=$PWD/gtod.so ./test
+run_tests:
+	cd tests && nosetests
