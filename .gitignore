@@ -16,6 +16,7 @@
 *.out
 *.app
 test
+warp
 
 # Python compiled files
 *.pyc
