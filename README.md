@@ -76,7 +76,6 @@ In the `shim'd log`, expect the difference between the two times to be
 100 seconds: we ask the time to be shifted by 102 seconds, but we also wait (spend) 2 seconds,
 so 102-2=100 seconds is the value you'll get.
 
-
 How to use the shim
 -------------------
 
@@ -101,3 +100,15 @@ This library just has two functions.
    Please, please note that the time in `tzp->tz_minuteswest` is assumed to be
    in **seconds**.
    A _positive_ value means a shift in the _past_, a _negative_ one a shift in the _future_.
+
+
+Hack it!
+--------
+
+Automated testing is here.
+
+To run the tests, just run `make run_tests`. This command will take care of Python testing libraries,
+building of the shim library and test app building. Obviously, you'll need CPython to run the tests.
+Other Python implementations may be not supported.
+
+You can find the tests in the `tests/` folder.

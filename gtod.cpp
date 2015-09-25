@@ -105,7 +105,7 @@ int settimeofday(const struct timeval *tp, const struct timezone *ztp){
 
   if(ztp != NULL){
     if(ztp->tz_dsttime == 0){
-      DELTA_BEFORE_BOUNDARY = ztp->tz_minuteswest;
+      DELTA_BEFORE_BOUNDARY += ztp->tz_minuteswest;
     }
   }
 

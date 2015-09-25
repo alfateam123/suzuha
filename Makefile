@@ -1,7 +1,7 @@
 
 CXX := g++
 
-all: gtod.so test.c
+all: gtod.so test
 
 #gtod.o: gtod.cpp
 #	$(CXX) -DGTOD_SHIM_DEBUG  -fPIC $^ -c -o $@ -Wall -Werror
@@ -15,11 +15,12 @@ gtod.so: gtod.o libstdc++.a
 libstdc++.a:
 	ln -s $(shell $(CXX) -print-file-name=libstdc++.a)
 
-test.c:
-	$(CXX) $@ -Wall -Werror
+test:
+	$(CXX) c_tests/test.c -o test -Wall -Werror && \
+	$(CXX) c_tests/warp.c -o warp -Wall -Werror -std=c++11
 
 clean:
-	-rm gtod.o gtod.so libstdc++.a test
+	-rm gtod.o gtod.so libstdc++.a test warp
 
-#run:
-#	./test && LD_PRELOAD=$PWD/gtod.so ./test
+run_tests:
+	bash run_tests.sh
