@@ -1,8 +1,7 @@
-the library who leapt through time [was: gtod-shim]
+Suzuha [was: gtod-shim]
 ===================================================
 
 Shim library for gettimeofday() for testing and exposing time-related bugs.
-
 
 How it started
 ==============
