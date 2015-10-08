@@ -112,3 +112,10 @@ building of the shim library and test app building. Obviously, you'll need CPyth
 Other Python implementations may be not supported.
 
 You can find the tests in the `tests/` folder.
+
+Troubleshooting
+---------------
+
+* _compilation fails with libstdc++.a being a broken symlink_  
+Try to replace `libstdc++.a` with `libstdc++.so`. On my machine,
+it seemed to work.

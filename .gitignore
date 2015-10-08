@@ -17,6 +17,7 @@
 *.app
 test
 warp
+settime
 
 # Python compiled files
 *.pyc

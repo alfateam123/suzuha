@@ -21,21 +21,35 @@
 const int64_t USECS_IN_SEC = 1000000;
 const int64_t USECS_IN_MSEC = 1000;
 
-/*const*/ int64_t DELTA_BEFORE_BOUNDARY = 0; //10 * USECS_IN_SEC; // 10s
+/*const*/ int64_t delta_before_boundary = 0; //10 * USECS_IN_SEC; // 10s
 
 typedef int (*GTOD_t)(struct timeval *, struct timezone *);
 typedef int (*STOD_t)(const struct timeval*, const struct timezone *);
 
+struct timeval original_gettimeofday(){
+  static GTOD_t gtod_orig = (GTOD_t) dlsym(RTLD_NEXT, "gettimeofday");
+   
+  assert(gtod_orig && "Failed to find original gettimeofday()!");
+  assert(gtod_orig != gettimeofday);
+   
+  struct timeval tv;
+  gtod_orig(&tv, NULL);
+
+  return tv;
+}
+
 // Get usec since epoch using actual gettimeofday().
 uint64_t get_usec_since_epoch() {
-  static GTOD_t gtod_orig = (GTOD_t) dlsym(RTLD_NEXT, "gettimeofday");
+  /*static GTOD_t gtod_orig = (GTOD_t) dlsym(RTLD_NEXT, "gettimeofday");
 
   assert(gtod_orig && "Failed to find original gettimeofday()!");
   assert(gtod_orig != gettimeofday);
 
   struct timeval tv;
   gtod_orig(&tv, NULL);
+  */
 
+  struct timeval tv = original_gettimeofday();
   uint64_t sec = tv.tv_sec;
   uint64_t usec = tv.tv_usec;
   uint64_t usec_since_epoch = (sec * USECS_IN_SEC) + usec;
@@ -49,7 +63,7 @@ int gettimeofday(struct timeval *tp, struct timezone *tzp) {
   assert(!tzp && "non-null timezone pointer? you're using gtod-shim, so a timezone would be ignored.");
 
 #ifdef GTOD_SHIM_DEBUG
-   printf("[GTOD_HOOK] DELTA_BEFORE_BOUNDARY=%ld\n", DELTA_BEFORE_BOUNDARY);
+   printf("[GTOD_HOOK] delta_before_boundary=%ld\n", delta_before_boundary);
 #endif
 
   uint64_t now = get_usec_since_epoch();
@@ -60,10 +74,10 @@ int gettimeofday(struct timeval *tp, struct timezone *tzp) {
 
   // Desired time is nearest 32bit boundary of msec
   // Adjust by least-significant 32bits in addition
-  // to the padding defined by DELTA_BEFORE_BOUNDARY
+  // to the padding defined by delta_before_boundary
   //uint64_t mask = (((uint64_t) 1) << 32) - 1;
-  uint64_t adjust = DELTA_BEFORE_BOUNDARY * USECS_IN_SEC;
-      //(msec_since_epoch_base & mask) * USECS_IN_MSEC + DELTA_BEFORE_BOUNDARY;
+  uint64_t adjust = delta_before_boundary * USECS_IN_SEC;
+      //(msec_since_epoch_base & mask) * USECS_IN_MSEC + delta_before_boundary;
 
   // Compute adjusted time and populate timeval struct
   uint64_t now_adjust = now - adjust;
@@ -77,7 +91,7 @@ int gettimeofday(struct timeval *tp, struct timezone *tzp) {
     uint64_t usec_since_epoch_base = now;
 
     int64_t usec_before_boundary =
-        (int64_t)(now - usec_since_epoch_base) - DELTA_BEFORE_BOUNDARY;
+        (int64_t)(now - usec_since_epoch_base) - delta_before_boundary;
     printf(
         "[GTOD_HOOK] delta to 32bit msec boundary=%jdms, reporting time as: %s",
         usec_before_boundary / USECS_IN_MSEC, ctime(&tp->tv_sec));
@@ -102,16 +116,27 @@ int settimeofday(const struct timeval *tp, const struct timezone *ztp){
 #ifdef GTOD_SHIM_DEBUG
    printf("[STOD_HOOK] called custom settimeofday!\n");
 #endif
+/*
+  if(ztp != NULL){
+    if(ztp->tz_dsttime == 0){
+      delta_before_boundary += ztp->tz_minuteswest;
+    }
+  }
+*/
+#ifdef GTOD_SHIM_DEBUG
+   printf("[STOD_HOOK] delta_before_boundary=%ld\n", delta_before_boundary);
+#endif
+
+  if(tp != NULL){
+    struct timeval real_now = original_gettimeofday();
+    delta_before_boundary = (real_now.tv_sec - tp->tv_sec);
+  }
 
   if(ztp != NULL){
     if(ztp->tz_dsttime == 0){
-      DELTA_BEFORE_BOUNDARY += ztp->tz_minuteswest;
+      delta_before_boundary += ztp->tz_minuteswest;
     }
   }
-
-#ifdef GTOD_SHIM_DEBUG
-   printf("[STOD_HOOK] DELTA_BEFORE_BOUNDARY=%ld\n", DELTA_BEFORE_BOUNDARY);
-#endif
 
   return use_real_settimeofday(tp, ztp);
 }
