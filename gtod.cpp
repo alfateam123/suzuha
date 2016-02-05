@@ -25,6 +25,16 @@ const int64_t USECS_IN_MSEC = 1000;
 
 typedef int (*GTOD_t)(struct timeval *, struct timezone *);
 typedef int (*STOD_t)(const struct timeval*, const struct timezone *);
+typedef time_t (*ORIGTIME_t)(time_t*);
+
+time_t original_time(){
+  static ORIGTIME_t time_orig = (ORIGTIME_t) dlsym(RTLD_NEXT, "time");
+
+  assert(time_orig && "Failed to find original time()!");
+  assert(time_orig != time);
+
+  return time_orig(NULL);
+}
 
 struct timeval original_gettimeofday(){
   static GTOD_t gtod_orig = (GTOD_t) dlsym(RTLD_NEXT, "gettimeofday");
@@ -139,4 +149,12 @@ int settimeofday(const struct timeval *tp, const struct timezone *ztp){
   }
 
   return use_real_settimeofday(tp, ztp);
+}
+
+time_t time(time_t *__timer){
+#ifdef GTOD_SHIM_DEBUG
+  printf("[TIME_HOOK] called time!\n");
+#endif
+
+  return original_time() + delta_before_boundary;
 }
