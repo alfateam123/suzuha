@@ -3,11 +3,8 @@ CXX := g++
 
 all: gtod.so test
 
-#gtod.o: gtod.cpp
-#	$(CXX) -DGTOD_SHIM_DEBUG  -fPIC $^ -c -o $@ -Wall -Werror
-
 gtod.o: gtod.cpp
-	$(CXX) -fPIC $^ -c -o $@ -Wall -Werror
+	$(CXX) -fPIC $^ -c -o $@ -Wall -Werror #-DGTOD_SHIM_DEBUG
 
 gtod.so: gtod.o libstdc++.a
 	$(CXX) -shared $^ -o $@ -ldl 
@@ -22,7 +19,7 @@ test:
 	$(CXX) c_tests/settime.c -o settime -Wall -Werror
 
 clean:
-	-rm gtod.o gtod.so libstdc++.a test warp settime time
+	rm gtod.o gtod.so libstdc++.a test warp settime time
 
 run_tests:
 	bash run_tests.sh

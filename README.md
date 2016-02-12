@@ -108,8 +108,9 @@ Hack it!
 Automated testing is here.
 
 To run the tests, just run `make run_tests`. This command will take care of Python testing libraries,
-building of the shim library and test app building. Obviously, you'll need CPython to run the tests.
-Other Python implementations may be not supported.
+building of the shim library and test app building.
+Only CPython 3.x is officially supported, support for other implementations/versions
+is limited by `nose` and `sarge`, the two Python dependencies used for the test.
 
 You can find the tests in the `tests/` folder.
 
