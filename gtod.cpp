@@ -156,5 +156,5 @@ time_t time(time_t *__timer){
   printf("[TIME_HOOK] called time!\n");
 #endif
 
-  return original_time() + delta_before_boundary;
+  return original_time() - delta_before_boundary;
 }

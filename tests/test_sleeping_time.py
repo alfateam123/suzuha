@@ -26,8 +26,8 @@ class TestTimeSleep(unittest.TestCase):
 
     def test_withoutShim(self):
         start_time, end_time  = self.run_executable()
-        self.assertTrue(1 <= (end_time - start_time) <= 5)
+        self.assertTrue(1 <= (end_time - start_time) <= 2)
 
     def test_withShim(self):
         start_time, end_time = self.run_executable(with_shim=True)
-        self.assertTrue(99 <= abs(end_time - start_time) <= 105) 
+        self.assertTrue(99 <= abs(end_time - start_time) <= 102) 
