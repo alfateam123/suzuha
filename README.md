@@ -78,13 +78,11 @@ so 102-2=100 seconds is the value you'll get.
 How to use the shim
 -------------------
 
-Yes. We need this section too.
-
 If you read the Test section, you should've understood how you can preload the shim into
 your testing application. This section explains how you can leap through time
 and know where you landed.
 
-This library just has two functions.
+This library mocks some functions.
 
 * `int gettimeofday(struct timevalue*, struct timezone*)`
    this works as explained in `gettimeofday(3P)`.
@@ -100,6 +98,9 @@ This library just has two functions.
    in **seconds**.
    A _positive_ value means a shift in the _past_, a _negative_ one a shift in the _future_.
 
+* `time_t time(time_t*)`
+  Simulates `time` from `time.h`, returning the appropriate time value, in seconds.
+  **WARNING**: The parameter is ignored, the new value is ALWAYS returned.
 
 Hack it!
 --------

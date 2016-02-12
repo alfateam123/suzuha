@@ -2,25 +2,26 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-void print_time(){
+struct timeval print_time(){
     struct timeval now;
     gettimeofday(&now, NULL);
     printf("%lu.%lu\n", now.tv_sec, now.tv_usec);
+    return now;
 }
 
 int main(int argc, char* argv[]){
-    print_time();
+    auto now = print_time();
     
     {
       const struct timezone tzp{-100, 0};
-      settimeofday(NULL, &tzp);
+      settimeofday(&now, &tzp);
     }
 
-    print_time();
+    now = print_time();
 
     {
       const struct timezone tzp{100, 0};
-      settimeofday(NULL, &tzp);
+      settimeofday(&now, &tzp);
     }
     
     print_time(); 

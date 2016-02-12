@@ -18,7 +18,11 @@
 test
 warp
 settime
+time
 
 # Python compiled files
 *.pyc
 __pycache__/
+
+# Python virtualenv
+.virt_gtodshim/

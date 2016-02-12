@@ -17,11 +17,12 @@ libstdc++.a:
 
 test:
 	$(CXX) c_tests/test.c -o test -Wall -Werror && \
-	$(CXX) c_tests/warp.c -o warp -Wall -Werror -std=c++11 &&\
+	$(CXX) c_tests/time.c -o time -Wall -Werror && \
+	$(CXX) c_tests/warp.c -o warp -Wall -Werror -std=c++0x &&\
 	$(CXX) c_tests/settime.c -o settime -Wall -Werror
 
 clean:
-	-rm gtod.o gtod.so libstdc++.a test warp settime
+	-rm gtod.o gtod.so libstdc++.a test warp settime time
 
 run_tests:
 	bash run_tests.sh

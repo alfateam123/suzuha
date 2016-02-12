@@ -26,4 +26,4 @@ fi
 echo ""
 echo "we're ready now. starting tests..."
 cd tests;
-nosetests
+nosetests -v
